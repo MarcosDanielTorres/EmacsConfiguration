@@ -1,0 +1,375 @@
+* Terminal
+** Setting Default Shell Bash
+#+BEGIN_SRC emacs-lisp
+  (when window-system (global-hl-line-mode t))
+#+END_SRC
+
+* Modeline
+** spaceline
+#+BEGIN_SRC emacs-lisp
+  (use-package spaceline
+    :ensure t
+    :config
+    (require 'spaceline-config)
+    (setq spaceline-buffer-encoding-abbrev-p nil)
+    (setq spaceline-line-column-p nil)
+    (setq spaceline-line-p nil)
+    (setq powerline-default-separator (quote arrow))
+    (spaceline-spacemacs-theme))
+#+END_SRC
+** diminish
+#+BEGIN_SRC emacs-lisp
+  (use-package diminish
+    :ensure t
+    :init
+    (diminish 'beacon-mode)
+    (diminish 'which-key-mode)
+    (diminish 'subword-mode)
+    (diminish 'rainbow-mode)
+
+
+    )
+#+END_SRC
+* Bars
+
+#+BEGIN_SRC emacs-lisp
+   (menu-bar-mode -1)
+   (tool-bar-mode -1)
+   (scroll-bar-mode -1)
+#+END_SRC
+
+* Yes Or No
+  #+BEGIN_SRC emacs-lisp
+  (defalias 'yes-or-no-p 'y-or-n-p)
+
+  #+END_SRC
+* Prettify symbols
+#+BEGIN_SRC emacs-lisp
+ ;; (global-prettify-symbols-mode t) 
+#+END_SRC
+
+* Ring bell
+  #+BEGIN_SRC emacs-lisp
+  (setq ring-bell-function 'ignore)
+  #+END_SRC
+
+* Scrolling
+
+#+BEGIN_SRC emacs-lisp 
+  (setq scroll-conservatively 100)
+#+END_SRC
+
+* Org 
+** Basic Config
+#+BEGIN_SRC emacs-lisp
+  (setq org-src-window-setup 'current-window)
+  (setq org-ellipsis " ")
+  (setq org-src-fontify-natively t)
+  (setq org-src-tab-acts-natively t)
+  (setq org-confirm-babel-evaluate nil)
+  (setq org-export-with-smart-quotes t)
+  (add-hook 'org-mode-hook 'org-indent-mode)
+  #+END_SRC
+** Org Bullets
+#+BEGIN_SRC emacs-lisp
+  (use-package org-bullets
+    :ensure t
+    :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+#+END_SRC
+** emacs-lisp template
+   #+BEGIN_SRC emacs-lisp
+   (add-to-list 'org-structure-template-alist
+	       '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+
+   #+END_SRC
+** org agenda
+#+BEGIN_SRC emacs-lisp
+  (global-set-key "\C-ca" 'org-agenda)
+#+END_SRC
+* Which-key
+  #+BEGIN_SRC emacs-lisp
+     (use-package which-key
+       :ensure t
+       :init
+       (which-key-mode))
+  #+END_SRC
+* EVIL-mode
+  #+BEGIN_SRC emacs-lisp
+     (use-package evil
+       :ensure t
+       :init
+       (evil-mode 1))
+  #+END_SRC
+** Using Evil Mode Visual Move Line Up Or Down 
+*** This Is An Implementation Of Aaron Jensen In Stackoverflow 
+    #+BEGIN_SRC emacs-lisp
+
+      ;(define-key evil-visual-state-map "J"
+      ;  (concat ":m '>+1" (kbd "RET") "gv=gv"))
+      ;(define-key evil-visual-state-map "K"
+      ;  (concat ":m '<-2" (kbd "RET") "gv=gv"))
+
+    #+END_SRC
+** Forcing Emacs To Enter Normal Mode With The Escape Key
+   #+BEGIN_SRC emacs-lisp
+
+     (define-key evil-emacs-state-map [escape] 'evil-normal-state)
+
+   #+END_SRC
+** Binding H/J/K/L To Occur-Mode (Whatever That Is Lmao)
+   #+BEGIN_SRC emacs-lisp
+      (evil-add-hjkl-bindings occur-mode-map 'emacs
+       (kbd "/")       'evil-search-forward
+       (kbd "n")       'evil-search-next
+       (kbd "n")       'evil-search-previous
+       (kbd "C-d")     'evil-scroll-down
+       (kbd "C-u")     'evil-scroll-up
+       (kbd "C-w C-w") 'other-window)
+   #+END_SRC
+* IDO
+** Enable Ido Mode
+#+BEGIN_SRC emacs-lisp
+  (setq ido-enable-flex-matching nil)
+  (setq ido-create-new-buffer 'always)
+  (setq ido-everywhere t)
+  (ido-mode 1)
+#+END_SRC
+** Ido Vertical
+#+BEGIN_SRC emacs-lisp
+  (use-package ido-vertical-mode
+    :ensure t
+    :init
+    (ido-vertical-mode 1))
+  (setq ido-vertical-define-keys 'c-n-and-c-p-only)
+#+END_SRC
+** Smex
+#+BEGIN_SRC emacs-lisp
+  (use-package smex
+    :ensure t
+    :init (smex-initialize)
+    :bind
+    ("M-x" . smex))
+#+END_SRC
+** Switch Buffer
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
+
+#+END_SRC
+* Buffers
+** Enable Ibuffer
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-x b") 'ibuffer)
+#+END_SRC
+** Expert
+#+BEGIN_SRC emacs-lisp
+(setq ibuffer-expert t)
+
+#+END_SRC
+* Clojure
+* Avy Package
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :ensure t
+    :bind
+    ("M-s" . avy-goto-char))
+#+END_SRC
+* Startup Message
+#+BEGIN_SRC emacs-lisp
+
+(setq inhibit-startup-message t)
+
+#+END_SRC
+* Config Edit/Reload
+** Edit
+#+BEGIN_SRC emacs-lisp
+  (defun config-visit ()
+    (interactive)
+    (find-file "~/.emacs.d/config.org"))
+  (global-set-key (kbd "C-c e") 'config-visit)
+#+END_SRC
+** Reload
+#+BEGIN_SRC emacs-lisp
+  (defun config-reload ()
+    (interactive)
+    (org-babel-load-file (expand-file-name "~/.emacs.d/config.org"))
+    (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
+  (global-set-key (kbd "C-c r") 'config-reload)
+#+END_SRC
+* Line Numbers
+#+BEGIN_SRC emacs-lisp
+  (global-display-line-numbers-mode)
+
+#+END_SRC
+* Start In Fullscreen Mode
+#+BEGIN_SRC emacs-lisp
+
+(toggle-frame-fullscreen)
+
+#+END_SRC
+* switch-window package
+#+BEGIN_SRC emacs-lisp
+  (use-package switch-window
+    :ensure t
+    :config
+    (setq switch-window-input-style 'minibuffer)
+    (setq switch-window-increase 6)
+    (setq switch-window-threshold 2)
+    (setq switch-window-shortcut-style 'qwerty)
+    (setq switch-window-qwerty-shortcuts
+	  '("a" "s" "d" "f" "l"))
+    :bind
+    ([remap other-window] . switch-window))
+#+END_SRC
+* Window Splitting Function
+#+BEGIN_SRC emacs-lisp
+  (defun split-and-follow-horizontally ()
+    (interactive)
+    (split-window-right)
+    (balance-windows)
+    (other-window 1))
+  (global-set-key (kbd "C-x 3") 'split-and-follow-horizontally)
+
+   (defun split-and-follow-vertically ()
+     (interactive)
+     (split-window-below)
+     (balance-windows)
+     (other-window 1))
+   (global-set-key (kbd "C-x 2") 'split-and-follow-vertically)
+#+END_SRC
+* Electric pairs
+#+BEGIN_SRC emacs-lisp
+  (setq electric-pair-pairs '(
+			      (?\( . ?\))
+			      (?\[ . ?\])
+			      (?\{ . ?\})
+			      ))
+  (electric-pair-mode t)
+
+#+END_SRC
+* Line And Column Number By Default
+#+BEGIN_SRC emacs-lisp
+  (line-number-mode 1)
+  (column-number-mode 1)
+#+END_SRC
+* Kill Current Buffer
+#+BEGIN_SRC emacs-lisp
+  (defun kill-curr-buffer ()
+    (interactive)
+    (kill-buffer (current-buffer)))
+  (global-set-key (kbd "C-x k") 'kill-current-buffer)
+
+#+END_SRC
+* Rainbow Package
+  #+BEGIN_SRC emacs-lisp
+    (use-package rainbow-mode
+      :ensure t
+      :init (add-hook 'prog-mode-hook 'rainbow-mode)) 
+  #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-delimiters
+    :ensure t
+    :init
+    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+
+#+END_SRC
+* Dashboard Package
+#+BEGIN_SRC emacs-lisp
+  (use-package dashboard
+    :ensure t
+    :config
+  (dashboard-setup-startup-hook)
+   (setq dashboard-items '((recents . 10)
+                            (projects . 10)))
+   (setq dashboard-startup-banner "~/.emacs.d/img/dashLogo.png")
+   (setq dashboard-banner-logo-title "a1M's Emacs"))
+#+END_SRC
+* Clock
+#+BEGIN_SRC emacs-lisp
+  (setq display-time-24hr-format t)
+  (display-time-mode 1)
+#+END_SRC
+
+* No backups
+#+BEGIN_SRC emacs-lisp
+(setq make-backup-files nil)
+(setq auto-save-default nil)
+#+END_SRC
+
+* Show Parenthesis Mode
+#+BEGIN_SRC emacs-lisp
+(show-paren-mode 1)
+#+END_SRC
+* Async 
+  #+BEGIN_SRC emacs-lisp
+  (use-package async
+    :ensure t
+    :init (dired-async-mode 1))
+  #+END_SRC
+* erc
+** Common settings
+#+BEGIN_SRC emacs-lisp
+(setq erc-nick "a1M")
+(setq erc-prompt (lambda () (concat "[" (buffer-name) "]")))
+(setq erc-hide-list '("JOIN" "PART" "QUIT"))
+#+END_SRC
+
+** nick highlighting
+#+BEGIN_SRC emacs-lisp
+(use-package erc-hl-nicks
+:ensure t
+:config
+(erc-update-modules))
+#+END_SRC
+* Discord
+#+BEGIN_SRC emacs-lisp
+(use-package elcord
+:ensure t)
+#+END_SRC
+* swiper package
+#+BEGIN_SRC emacs-lisp
+  (use-package swiper
+    :ensure t
+    :bind ("C-s" . swiper))
+#+END_SRC
+* auto completion
+** company
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+      :ensure t
+      :init
+      (add-hook 'after-init-hook 'global-company-mode)
+      :config
+      (setq company-idle-delay 1)
+      (setq company-minimum-prefix-length 2))
+
+  (with-eval-after-load 'company
+      (define-key company-active-map (kbd "M-n") nil)
+      (define-key company-active-map (kbd "M-p") nil)
+
+      (define-key company-active-map (kbd "C-n") #'company-select-next)
+      (define-key company-active-map (kbd "C-p") #'company-select-previous))
+
+  (use-package company-irony
+      :ensure t
+      :config
+      (require 'company)
+      (add-to-list 'company-backends 'company-irony))
+
+  (use-package irony
+      :ensure t
+      :config
+      (add-hook 'c++-mode-hook 'irony-mode)
+      (add-hook 'c-mode-hook 'irony-mode)
+      (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+
+  (with-eval-after-load 'company
+      (add-hook 'c++-mode-hook 'company-mode)
+      (add-hook 'c-mode-hook 'company-mode))
+#+END_SRC
+** some config
+#+BEGIN_SRC emacs-lisp
+    (setq w32-pipe-read-delay 0)
+  ;; Set the buffer size to 64K on Windows (from the original 4K)
+    (setq irony-server-w32-pipe-buffer-size (* 64 1024))
+#+END_SRC
